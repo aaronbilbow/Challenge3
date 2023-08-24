@@ -1,0 +1,53 @@
+import os
+import csv
+
+total_months = 0
+net_total = 0
+prev_profit_loss = 0
+profit_changes = []
+greatest_increase = {"date": "", "amount": float("-inf")}
+greatest_decrease = {"date": "", "amount": float("inf")}
+
+csv_path = os.path.join('Resources', 'budget_data.csv')
+with open(csv_path, newline='') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=',')
+    
+    next(csvreader)
+    
+    for row in csvreader:
+        date = row[0]
+        profit_loss = int(row[1])
+        
+        total_months += 1
+        net_total += profit_loss
+        
+        if total_months > 1:
+            change = profit_loss - prev_profit_loss
+            profit_changes.append(change)
+            if change > greatest_increase["amount"]:
+                greatest_increase["date"] = date
+                greatest_increase["amount"] = change
+            if change < greatest_decrease["amount"]:
+                greatest_decrease["date"] = date
+                greatest_decrease["amount"] = change
+        prev_profit_loss = profit_loss
+
+average_change = sum(profit_changes) / len(profit_changes)
+print("Financial Analysis")
+print("-----------------------------------------------------------------------")
+print(f"Total Months: {total_months}")
+print(f"Total: ${net_total}")
+print(f"Average Change: ${average_change:.2f}")
+print(f"Greatest Increase in Profits: {greatest_increase['date']} (${greatest_increase['amount']})")
+print(f"Greatest Decrease in Profits: {greatest_decrease['date']} (${greatest_decrease['amount']})")
+output_path = "financial_analysis_results.txt"
+with open(output_path, 'w') as output_file:
+    output_file.write("Financial Analysis\n")
+    output_file.write("-----------------------------------------------\n")
+    output_file.write(f"Total Months: {total_months}\n")
+    output_file.write(f"Total: ${net_total}\n")
+    output_file.write(f"Average Change: ${average_change:.2f}\n")
+    output_file.write(f"Greatest Increase in Profits: {greatest_increase['date']} (${greatest_increase['amount']})\n")
+    output_file.write(f"Greatest Decrease in Profits: {greatest_decrease['date']} (${greatest_decrease['amount']})\n")
+
+print("Analysis results have been printed and saved to 'financial_analysis_results.txt'.")
